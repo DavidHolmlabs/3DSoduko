@@ -1,0 +1,95 @@
+﻿<Window x:Class="SodukoGui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SodukoGui"
+        mc:Ignorable="d"
+        Title="3d soduko by David Holm" Height="500" Width="625" Closing="Window_Closing">
+    <Window.Resources>
+        <local:NotConverter x:Key="NotConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label Content="{Binding Header}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+        <Grid Grid.Column="1" Grid.Row="1" Width="304" Height="304">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="35" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="35"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <local:MainBoard x:Name="mainBoard" Grid.Column="1" Grid.Row="0"/>
+            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
+                <Button Content="->" Height="20" Width="20" Margin="5" Command="{Binding SelectRowCommand}" CommandParameter="1"/>
+                <Button Content="->" Height="20" Width="20" Margin="5" Command="{Binding SelectRowCommand}" CommandParameter="2"/>
+                <Button Content="->" Height="20" Width="20" Margin="5" Command="{Binding SelectRowCommand}" CommandParameter="3"/>
+                <Button Content="->" Height="20" Width="20" Margin="5" Command="{Binding SelectRowCommand}" CommandParameter="4"/>
+                <Button Content="->" Height="20" Width="20" Margin="5" Command="{Binding SelectRowCommand}" CommandParameter="5"/>
+                <Button Content="->" Height="20" Width="20" Margin="5" Command="{Binding SelectRowCommand}" CommandParameter="6"/>
+                <Button Content="->" Height="20" Width="20" Margin="5" Command="{Binding SelectRowCommand}" CommandParameter="7"/>
+                <Button Content="->" Height="20" Width="20" Margin="5" Command="{Binding SelectRowCommand}" CommandParameter="8"/>
+                <Button Content="->" Height="20" Width="20" Margin="5" Command="{Binding SelectRowCommand}" CommandParameter="9"/>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                <Button Content="|" Height="20" Width="20" Margin="5" Command="{Binding SelectColumnCommand}" CommandParameter="1"/>
+                <Button Content="|" Height="20" Width="20" Margin="5" Command="{Binding SelectColumnCommand}" CommandParameter="2"/>
+                <Button Content="|" Height="20" Width="20" Margin="5" Command="{Binding SelectColumnCommand}" CommandParameter="3"/>
+                <Button Content="|" Height="20" Width="20" Margin="5" Command="{Binding SelectColumnCommand}" CommandParameter="4"/>
+                <Button Content="|" Height="20" Width="20" Margin="5" Command="{Binding SelectColumnCommand}" CommandParameter="5"/>
+                <Button Content="|" Height="20" Width="20" Margin="5" Command="{Binding SelectColumnCommand}" CommandParameter="6"/>
+                <Button Content="|" Height="20" Width="20" Margin="5" Command="{Binding SelectColumnCommand}" CommandParameter="7"/>
+                <Button Content="|" Height="20" Width="20" Margin="5" Command="{Binding SelectColumnCommand}" CommandParameter="8"/>
+                <Button Content="|" Height="20" Width="20" Margin="5" Command="{Binding SelectColumnCommand}" CommandParameter="9"/>
+            </StackPanel>
+        </Grid>
+        
+        <StackPanel Orientation="Vertical" Grid.Column="0"  Grid.Row="0" Grid.RowSpan="2">
+            <StackPanel.Resources>
+                <Style x:Name="A" TargetType="RadioButton" >
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
+                <Style x:Name="B" TargetType="Button" >
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="Width" Value="100px"/>
+                </Style>
+                <Style x:Name="C" TargetType="Label" >
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
+            </StackPanel.Resources>
+            <Label Content="Dimension" />
+            <RadioButton x:Name="DimensionX" Content="X" GroupName="Dimension" IsChecked="True" 
+                         Command="{Binding SetDimensionCommand}" CommandParameter="0"/>
+            <RadioButton x:Name="DimensionY" Content="Y" GroupName="Dimension" 
+                         Command="{Binding SetDimensionCommand}" CommandParameter="1" />
+            <RadioButton x:Name="DimensionZ" Content="Z" GroupName="Dimension" 
+                         Command="{Binding SetDimensionCommand}" CommandParameter="2" DataContextChanged="RadioButton_DataContextChanged" />
+            <Label Content="Index"/>
+            <RadioButton x:Name="Index1" Content="1" GroupName="Index" IsChecked="True" Command="{Binding SetIndexCommand}" CommandParameter="0"/>
+            <RadioButton x:Name="Index2" Content="2" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="1"/>
+            <RadioButton x:Name="Index3" Content="3" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="2"/>
+            <RadioButton x:Name="Index4" Content="4" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="3"/>
+            <RadioButton x:Name="Index5" Content="5" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="4"/>
+            <RadioButton x:Name="Index6" Content="6" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="5"/>
+            <RadioButton x:Name="Index7" Content="7" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="6"/>
+            <RadioButton x:Name="Index8" Content="8" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="7"/>
+            <RadioButton x:Name="Index9" Content="9" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="8"/>
+            <Button Content="Solve" Command="{Binding SolveCommand}" IsEnabled="{Binding Solving, Converter={StaticResource NotConverter}}"/>
+            <Button Content="Stop Solving" Command="{Binding StopSolveCommand}" IsEnabled="{Binding Solving}"/>
+            <Button Content="Easy" Command="{Binding StartCommand}" CommandParameter="1"/>
+            <Button Content="Medium" Command="{Binding StartCommand}" CommandParameter="2"/>
+            <Button Content="Hard" Command="{Binding StartCommand}" CommandParameter="3"/>
+            <Button Content="Verify" Command="{Binding VerifyCommand}" />
+        </StackPanel>
+    </Grid>
+</Window>
