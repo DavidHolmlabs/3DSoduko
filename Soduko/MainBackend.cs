@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Soduko
 {
@@ -46,7 +47,12 @@ namespace Soduko
             }
         }
 
-        public void FetchSolution(int emptySquares)
+        public async Task FetchSolutionAsync(int emptySquares)
+        {
+            await Task.Run(() => FetchSolution(emptySquares));
+        }
+
+        private void FetchSolution(int emptySquares)
         {
             board.Clear();
             string solution = System.Text.Encoding.UTF8.GetString(Properties.Resources.Soduko);

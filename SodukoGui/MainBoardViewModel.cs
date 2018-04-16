@@ -11,16 +11,16 @@ namespace SodukoGui
 {
     internal class MainBoardViewModel : INotifyPropertyChanged
     {
-        private MainGame mainBackend;
+        private MainGame mainGame;
         private SodukoBoard2d displayedBoard;
         private Thread workerThread;
         private Solver solver = new Solver();
 
         public MainBoardViewModel()
         {
-            mainBackend = new MainGame();
+            mainGame = new MainGame();
             SolveCommand = new RelayCommand(DispatchSolve);
-            StartCommand = new RelayCommand<string>(StartGame);
+            StartCommand = new RelayCommand<string>(FetchSolution);
             StopSolveCommand = new RelayCommand(StopSolve);
             VerifyCommand = new RelayCommand(Verify);
             SetDimensionCommand = new RelayCommand<string>(SetDimension);
@@ -28,8 +28,8 @@ namespace SodukoGui
             SelectRowCommand = new RelayCommand<string>(SelectRow);
             SelectColumnCommand = new RelayCommand<string>(SelectColumn);
 
-            displayedBoard = mainBackend.Get2dBoard(0, 0);
-            mainBackend.Deserialize(Settings.Default.CurrentSolution);
+            displayedBoard = mainGame.Get2dBoard(0, 0);
+            mainGame.Deserialize(Settings.Default.CurrentSolution);
             SetHeader();
         }
 
@@ -110,7 +110,7 @@ namespace SodukoGui
 
         private void Verify()
         {
-            if (mainBackend.Verify())
+            if (mainGame.Verify())
                 Header = "Congratulations! You solved the soduko!";
             else
                 Header = "Sorry, not done yet.";
@@ -126,23 +126,17 @@ namespace SodukoGui
             solver.Stop();
         }
 
-        private void StartGame(string difficulty)
+        private async void FetchSolution(object difficulty)
         {
             if (Solving) return;
-
-            workerThread = new Thread(FetchSolution);
-            workerThread.Start(difficulty);
             Enabled = false;
-        }
 
-        private void FetchSolution(object difficulty)
-        {
             if (difficulty.ToString() == "1")
-                mainBackend.FetchSolution(9 * 9 * 9 - 400);
+                await mainGame.FetchSolutionAsync(9 * 9 * 9 - 400);
             else if (difficulty.ToString() == "2")
-                mainBackend.FetchSolution(9 * 9 * 9 - 300);
+                await mainGame.FetchSolutionAsync(9 * 9 * 9 - 300);
             else if (difficulty.ToString() == "3")
-                mainBackend.FetchSolution(9 * 9 * 9 - 200);
+                await mainGame.FetchSolutionAsync(9 * 9 * 9 - 200);
             else
                 throw new ArgumentException("Expected aruments are 1, 2 or 3");
 
@@ -163,7 +157,7 @@ namespace SodukoGui
 
         private void Solve()
         {
-            solver.FillRecursively(mainBackend);
+            solver.FillRecursively(mainGame);
             Solving = false;
 
             foreach (var singleSquareViewModels in SingleSquareViewModels)
@@ -175,7 +169,7 @@ namespace SodukoGui
         internal void Close()
         {
             solver.Stop();
-            Settings.Default.CurrentSolution = mainBackend.Serialize();
+            Settings.Default.CurrentSolution = mainGame.Serialize();
             Settings.Default.Save();
         }
 
@@ -191,7 +185,7 @@ namespace SodukoGui
 
         private void UpdateAllModels()
         {
-            displayedBoard = mainBackend.Get2dBoard(FixedDimension, FixedIndex);
+            displayedBoard = mainGame.Get2dBoard(FixedDimension, FixedIndex);
 
             foreach (var item in SingleSquareViewModels)
             {
