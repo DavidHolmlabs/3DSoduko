@@ -1,7 +1,6 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using Soduko;
 using SodukoGui.Properties;
-using SodukoSolver;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,23 +11,14 @@ namespace SodukoGui
 {
     internal class MainBoardViewModel : INotifyPropertyChanged
     {
-        private MainBackend mainBackend;
+        private MainGame mainBackend;
         private SodukoBoard2d displayedBoard;
-        private Thread solveThread;
-        private MainSolver mainSolver = new MainSolver();
-
-        public ICommand SolveCommand { get; }
-        public ICommand StopSolveCommand { get; set; }
-        public ICommand StartCommand { get; }
-        public ICommand VerifyCommand { get; }
-        public ICommand SetDimensionCommand { get; }
-        public ICommand SetIndexCommand { get; }
-        public ICommand SelectRowCommand { get; }
-        public ICommand SelectColumnCommand { get; }
+        private Thread workerThread;
+        private Solver solver = new Solver();
 
         public MainBoardViewModel()
         {
-            mainBackend = new MainBackend();
+            mainBackend = new MainGame();
             SolveCommand = new RelayCommand(DispatchSolve);
             StartCommand = new RelayCommand<string>(StartGame);
             StopSolveCommand = new RelayCommand(StopSolve);
@@ -42,6 +32,31 @@ namespace SodukoGui
             mainBackend.Deserialize(Settings.Default.CurrentSolution);
             SetHeader();
         }
+
+        public ICommand SolveCommand { get; }
+        public ICommand StopSolveCommand { get; set; }
+        public ICommand StartCommand { get; }
+        public ICommand VerifyCommand { get; }
+        public ICommand SetDimensionCommand { get; }
+        public ICommand SetIndexCommand { get; }
+        public ICommand SelectRowCommand { get; }
+        public ICommand SelectColumnCommand { get; }
+
+        public bool Enabled { get; private set; } = true;
+        public string Header { get; private set; }
+        public bool Solving { get; set; }
+
+        /// <summary>
+        /// 0-based index of dimensions
+        /// </summary>
+        public short FixedDimension { get; private set; }
+
+        /// <summary>
+        /// 0-based index of level
+        /// </summary>
+        public short FixedIndex { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         private void SelectColumn(string column)
         {
@@ -93,8 +108,6 @@ namespace SodukoGui
                 Header = $"Showning level {FixedIndex + 1} along Z-dimension";
         }
 
-        public string Header { get; private set; }
-
         private void Verify()
         {
             if (mainBackend.Verify())
@@ -110,18 +123,25 @@ namespace SodukoGui
 
         private void StopSolve()
         {
-            mainSolver.Stop();
+            solver.Stop();
         }
-
-        public bool Solving { get; set; }
 
         private void StartGame(string difficulty)
         {
-            if (difficulty == "1")
+            if (Solving) return;
+
+            workerThread = new Thread(FetchSolution);
+            workerThread.Start(difficulty);
+            Enabled = false;
+        }
+
+        private void FetchSolution(object difficulty)
+        {
+            if (difficulty.ToString() == "1")
                 mainBackend.FetchSolution(9 * 9 * 9 - 400);
-            else if (difficulty == "2")
+            else if (difficulty.ToString() == "2")
                 mainBackend.FetchSolution(9 * 9 * 9 - 300);
-            else if (difficulty == "3")
+            else if (difficulty.ToString() == "3")
                 mainBackend.FetchSolution(9 * 9 * 9 - 200);
             else
                 throw new ArgumentException("Expected aruments are 1, 2 or 3");
@@ -130,42 +150,36 @@ namespace SodukoGui
             {
                 singleSquareViewModels.Value.FireAll();
             }
+
+            Enabled = true;
         }
 
         private void DispatchSolve()
         {
-            solveThread = new Thread(solve);
-            solveThread.Start();
+            workerThread = new Thread(Solve);
+            workerThread.Start();
             Solving = true;
         }
 
-        private void solve()
+        private void Solve()
         {
-            mainSolver.FillRecursively(mainBackend);
+            solver.FillRecursively(mainBackend);
             Solving = false;
+
+            foreach (var singleSquareViewModels in SingleSquareViewModels)
+            {
+                singleSquareViewModels.Value.FireAll();
+            }
         }
 
         internal void Close()
         {
-            mainSolver.Stop();
+            solver.Stop();
             Settings.Default.CurrentSolution = mainBackend.Serialize();
             Settings.Default.Save();
         }
 
-
-        /// <summary>
-        /// 0-based index of dimensions
-        /// </summary>
-        public short FixedDimension { get; private set; }
-
-        /// <summary>
-        /// 0-based index of level
-        /// </summary>
-        public short FixedIndex { get; private set; }
-
         private Dictionary<Tuple<int, int>, SingleSquareViewModel> SingleSquareViewModels = new Dictionary<Tuple<int, int>, SingleSquareViewModel>();
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         internal SingleSquareViewModel GetSingleSquareViewModel(int i, int j)
         {

@@ -49,6 +49,7 @@
     <Compile Include="IGet9List.cs" />
     <Compile Include="Index.cs" />
     <Compile Include="IndexExtensions.cs" />
+    <Compile Include="Solver.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

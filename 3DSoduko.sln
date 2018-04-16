@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SodukoGui", "SodukoGui\Sodu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soduko", "Soduko\Soduko.csproj", "{0890500F-175C-44AB-8A6D-75308AF80C2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SodukoSolver", "SodukoSolver\SodukoSolver.csproj", "{982B8A8A-FD18-4629-A128-B446B8816A94}"
-EndProject
 Global
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
@@ -26,10 +24,6 @@ Global
 		{0890500F-175C-44AB-8A6D-75308AF80C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0890500F-175C-44AB-8A6D-75308AF80C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0890500F-175C-44AB-8A6D-75308AF80C2B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{982B8A8A-FD18-4629-A128-B446B8816A94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{982B8A8A-FD18-4629-A128-B446B8816A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{982B8A8A-FD18-4629-A128-B446B8816A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{982B8A8A-FD18-4629-A128-B446B8816A94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

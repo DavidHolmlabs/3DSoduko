@@ -113,6 +113,9 @@
     </ApplicationDefinition>
     <Compile Include="Converters\BoolToColorConverter.cs" />
     <Compile Include="Converters\BoolToItalic.cs" />
+    <Compile Include="DimensionSelector.xaml.cs">
+      <DependentUpon>DimensionSelector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainBoard.xaml.cs">
       <DependentUpon>MainBoard.xaml</DependentUpon>
     </Compile>
@@ -122,6 +125,10 @@
       <DependentUpon>SingleSquare.xaml</DependentUpon>
     </Compile>
     <Compile Include="SingleSquareViewModel.cs" />
+    <Page Include="DimensionSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainBoard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -172,10 +179,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SodukoSolver\SodukoSolver.csproj">
-      <Project>{982b8a8a-fd18-4629-a128-b446b8816a94}</Project>
-      <Name>SodukoSolver</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Soduko\Soduko.csproj">
       <Project>{0890500f-175c-44ab-8a6d-75308af80c2b}</Project>
       <Name>Soduko</Name>

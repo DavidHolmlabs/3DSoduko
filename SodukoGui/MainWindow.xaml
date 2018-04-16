@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SodukoGui"
         mc:Ignorable="d"
-        Title="3d soduko by David Holm" Height="500" Width="625" Closing="Window_Closing">
+        Title="3d soduko by David Holm" Height="500" Width="625" Closing="Window_Closing" IsEnabled="{Binding Enabled}">
     <Window.Resources>
         <local:NotConverter x:Key="NotConverter"/>
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="102"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -56,40 +56,19 @@
         
         <StackPanel Orientation="Vertical" Grid.Column="0"  Grid.Row="0" Grid.RowSpan="2">
             <StackPanel.Resources>
-                <Style x:Name="A" TargetType="RadioButton" >
-                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                </Style>
                 <Style x:Name="B" TargetType="Button" >
                     <Setter Property="HorizontalAlignment" Value="Center"/>
                     <Setter Property="Width" Value="100px"/>
-                </Style>
-                <Style x:Name="C" TargetType="Label" >
-                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="1" />
                 </Style>
             </StackPanel.Resources>
-            <Label Content="Dimension" />
-            <RadioButton x:Name="DimensionX" Content="X" GroupName="Dimension" IsChecked="True" 
-                         Command="{Binding SetDimensionCommand}" CommandParameter="0"/>
-            <RadioButton x:Name="DimensionY" Content="Y" GroupName="Dimension" 
-                         Command="{Binding SetDimensionCommand}" CommandParameter="1" />
-            <RadioButton x:Name="DimensionZ" Content="Z" GroupName="Dimension" 
-                         Command="{Binding SetDimensionCommand}" CommandParameter="2" DataContextChanged="RadioButton_DataContextChanged" />
-            <Label Content="Index"/>
-            <RadioButton x:Name="Index1" Content="1" GroupName="Index" IsChecked="True" Command="{Binding SetIndexCommand}" CommandParameter="0"/>
-            <RadioButton x:Name="Index2" Content="2" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="1"/>
-            <RadioButton x:Name="Index3" Content="3" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="2"/>
-            <RadioButton x:Name="Index4" Content="4" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="3"/>
-            <RadioButton x:Name="Index5" Content="5" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="4"/>
-            <RadioButton x:Name="Index6" Content="6" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="5"/>
-            <RadioButton x:Name="Index7" Content="7" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="6"/>
-            <RadioButton x:Name="Index8" Content="8" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="7"/>
-            <RadioButton x:Name="Index9" Content="9" GroupName="Index" Command="{Binding SetIndexCommand}" CommandParameter="8"/>
-            <Button Content="Solve" Command="{Binding SolveCommand}" IsEnabled="{Binding Solving, Converter={StaticResource NotConverter}}"/>
-            <Button Content="Stop Solving" Command="{Binding StopSolveCommand}" IsEnabled="{Binding Solving}"/>
             <Button Content="Easy" Command="{Binding StartCommand}" CommandParameter="1"/>
             <Button Content="Medium" Command="{Binding StartCommand}" CommandParameter="2"/>
             <Button Content="Hard" Command="{Binding StartCommand}" CommandParameter="3"/>
             <Button Content="Verify" Command="{Binding VerifyCommand}" />
+            <Button Content="Solve" Command="{Binding SolveCommand}" IsEnabled="{Binding Solving, Converter={StaticResource NotConverter}}"/>
+            <Button Content="Stop Solving" Command="{Binding StopSolveCommand}" IsEnabled="{Binding Solving}"/>
+            <local:DimensionSelector Index="{Binding FixedIndex}"/>
         </StackPanel>
     </Grid>
 </Window>

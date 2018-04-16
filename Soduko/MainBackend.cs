@@ -5,13 +5,13 @@ using System.Diagnostics;
 
 namespace Soduko
 {
-    public class MainBackend
+    public class MainGame
     {
         public SodukoBoard3d board { get; set; }
 
         public Dictionary<Tuple<int, int>, SodukoBoard2d> SodukoParts = new Dictionary<Tuple<int, int>, SodukoBoard2d>();
 
-        public MainBackend()
+        public MainGame()
         {
             board = new SodukoBoard3d();
 
@@ -51,6 +51,8 @@ namespace Soduko
             board.Clear();
             string solution = System.Text.Encoding.UTF8.GetString(Properties.Resources.Soduko);
             Deserialize(solution);
+            Scramble();
+            Scramble();
             Scramble();
             RemoveValues(emptySquares);
             LockValues();
@@ -114,9 +116,9 @@ namespace Soduko
             SubSwap(2, dimension, random);
         }
 
-        private void SubSwap(int v, int dimension, Random random)
+        private void SubSwap(int subsquare, int dimension, Random random)
         {
-            int baseindex = v * 3;
+            int baseindex = subsquare * 3;
             if (random.Next(2) == 1)
                 SwapLayers(baseindex, baseindex + 1, dimension);
             if (random.Next(2) == 1)

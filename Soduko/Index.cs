@@ -18,7 +18,7 @@ namespace Soduko
         public int Y => Dimension2;
         public int Z => Dimension3;
 
-        internal static Index GetRandomNonEmpty(MainBackend matrix)
+        internal static Index GetRandomNonEmpty(MainGame matrix)
         {
             Index possible;
             do
