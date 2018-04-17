@@ -4,6 +4,8 @@ using SodukoGui.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
+using System.Net;
 using System.Threading;
 using System.Windows.Input;
 
@@ -131,19 +133,29 @@ namespace SodukoGui
             if (Solving) return;
             Enabled = false;
 
+            int emptySquares = 9 * 9 * 9 - 400;
             if (difficulty.ToString() == "1")
-                await mainGame.FetchSolutionAsync(9 * 9 * 9 - 400);
-            else if (difficulty.ToString() == "2")
-                await mainGame.FetchSolutionAsync(9 * 9 * 9 - 300);
-            else if (difficulty.ToString() == "3")
-                await mainGame.FetchSolutionAsync(9 * 9 * 9 - 200);
-            else
-                throw new ArgumentException("Expected aruments are 1, 2 or 3");
+                emptySquares = 9 * 9 * 9 - 400;
+            if (difficulty.ToString() == "2")
+                emptySquares = 9 * 9 * 9 - 300;
+            if (difficulty.ToString() == "3")
+                emptySquares = 9 * 9 * 9 - 200;
+
+            string endpoint = $"http://soduko3d.azurewebsites.net/api/GetInitialBoard?emptySquares={emptySquares}";
+
+            WebRequest request = WebRequest.Create(endpoint);
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                Stream dataStream = response.GetResponseStream();
+                using (StreamReader reader = new StreamReader(dataStream))
+                {
+                    string responseFromServer = await reader.ReadToEndAsync();
+                    mainGame.Deserialize(responseFromServer.Replace("\\", ""));
+                }
+            }
 
             foreach (var singleSquareViewModels in SingleSquareViewModels)
-            {
                 singleSquareViewModels.Value.FireAll();
-            }
 
             Enabled = true;
         }
@@ -161,9 +173,7 @@ namespace SodukoGui
             Solving = false;
 
             foreach (var singleSquareViewModels in SingleSquareViewModels)
-            {
                 singleSquareViewModels.Value.FireAll();
-            }
         }
 
         internal void Close()
