@@ -9,7 +9,7 @@ namespace Soduko
     public class SodukoSquare
     {
         private SodukoValue m_Value;
-        private bool m_Valid = true;
+        private bool? m_Valid;
         private Index m_Index;
         private List<Verifyer> Verifyables = new List<Verifyer>();
 
@@ -41,8 +41,7 @@ namespace Soduko
             return SodukoSet.AllValues().Except(all.Distinct()).ToList();
         }
 
-        [Newtonsoft.Json.JsonIgnore]
-        public bool Valid
+        public bool? Valid
         {
             get { return m_Valid; }
             set { m_Valid = value; }

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SodukoGui", "SodukoGui\Sodu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soduko", "Soduko\Soduko.csproj", "{0890500F-175C-44AB-8A6D-75308AF80C2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SodukoAzure", "SodukoAzure\SodukoAzure.csproj", "{EF549994-5141-4CB8-9798-26193B3533D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SodukoAzure", "SodukoAzure\SodukoAzure.csproj", "{EF549994-5141-4CB8-9798-26193B3533D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

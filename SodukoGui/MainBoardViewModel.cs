@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Windows.Input;
 
@@ -13,6 +14,7 @@ namespace SodukoGui
 {
     internal class MainBoardViewModel : INotifyPropertyChanged
     {
+        private readonly string mainEndpoint = $"http://soduko3d.azurewebsites.net/api/";
         private MainGame mainGame;
         private SodukoBoard2d displayedBoard;
         private Thread workerThread;
@@ -25,10 +27,8 @@ namespace SodukoGui
             StartCommand = new RelayCommand<string>(FetchSolution);
             StopSolveCommand = new RelayCommand(StopSolve);
             VerifyCommand = new RelayCommand(Verify);
-            SetDimensionCommand = new RelayCommand<string>(SetDimension);
-            SetIndexCommand = new RelayCommand<string>(SetIndex);
-            SelectRowCommand = new RelayCommand<string>(SelectRow);
-            SelectColumnCommand = new RelayCommand<string>(SelectColumn);
+            SelectRowCommand = new RelayCommand<string>(SelectIndex);
+            SelectColumnCommand = new RelayCommand<string>(SelectIndex);
 
             displayedBoard = mainGame.Get2dBoard(0, 0);
             mainGame.Deserialize(Settings.Default.CurrentSolution);
@@ -39,8 +39,6 @@ namespace SodukoGui
         public ICommand StopSolveCommand { get; set; }
         public ICommand StartCommand { get; }
         public ICommand VerifyCommand { get; }
-        public ICommand SetDimensionCommand { get; }
-        public ICommand SetIndexCommand { get; }
         public ICommand SelectRowCommand { get; }
         public ICommand SelectColumnCommand { get; }
 
@@ -51,51 +49,42 @@ namespace SodukoGui
         /// <summary>
         /// 0-based index of dimensions
         /// </summary>
-        public short FixedDimension { get; private set; }
+        public short FixedDimension
+        {
+            get => _fixedDimension;
+            set
+            {
+                _fixedDimension = value;
+                UpdateAllModels();
+                SetHeader();
+            }
+        }
 
         /// <summary>
         /// 0-based index of level
         /// </summary>
-        public short FixedIndex { get; set; }
+        public short FixedIndex
+        {
+            get => _fixedIndex;
+            set
+            {
+                _fixedIndex = value;
+                UpdateAllModels();
+                SetHeader();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void SelectColumn(string column)
+        private void SelectIndex(string index)
         {
-            if (FixedDimension == 0)
-                FixedDimension = 1;
-            else if (FixedDimension == 1)
-                FixedDimension = 0;
-            else if (FixedDimension == 2)
-                FixedDimension = 0;
-            FixedIndex = (short)(short.Parse(column) - 1);
-            UpdateAllModels();
-            SetHeader();
-        }
-
-        private void SelectRow(string row)
-        {
-            if (FixedDimension == 0)
-                FixedDimension = 2;
-            else if (FixedDimension == 1)
-                FixedDimension = 2;
-            else if (FixedDimension == 2)
-                FixedDimension = 1;
-            FixedIndex = (short)(short.Parse(row) - 1);
-            UpdateAllModels();
-            SetHeader();
-        }
-
-        private void SetIndex(string index)
-        {
-            FixedIndex = short.Parse(index);
-            UpdateAllModels();
-            SetHeader();
-        }
-
-        private void SetDimension(string dimension)
-        {
-            FixedDimension = short.Parse(dimension);
+            if (_fixedDimension == 0)
+                _fixedDimension = 1;
+            else if (_fixedDimension == 1)
+                _fixedDimension = 0;
+            else if (_fixedDimension == 2)
+                _fixedDimension = 0;
+            FixedIndex = (short)(short.Parse(index) - 1);
             UpdateAllModels();
             SetHeader();
         }
@@ -112,15 +101,34 @@ namespace SodukoGui
 
         private void Verify()
         {
-            if (mainGame.Verify())
-                Header = "Congratulations! You solved the soduko!";
-            else
-                Header = "Sorry, not done yet.";
+            VerifyViaCloud();
 
             foreach (var singleSquareViewModels in SingleSquareViewModels)
             {
                 singleSquareViewModels.Value.FirePropertyChanged(nameof(singleSquareViewModels.Value.Valid));
             }
+        }
+
+        private void VerifyViaCloud()
+        {
+            WebRequest request = WebRequest.Create(mainEndpoint + "VerifySoduko");
+            request.Method = "POST";
+            string postData = mainGame.Serialize();
+            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+            request.ContentType = "application/json";
+            request.ContentLength = byteArray.Length;
+            Stream dataStream = request.GetRequestStream();
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            dataStream.Close();
+            WebResponse response = request.GetResponse();
+            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+            dataStream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(dataStream);
+            string responseFromServer = reader.ReadToEnd();
+            mainGame.Deserialize(responseFromServer);
+            reader.Close();
+            dataStream.Close();
+            response.Close();
         }
 
         private void StopSolve()
@@ -141,7 +149,7 @@ namespace SodukoGui
             if (difficulty.ToString() == "3")
                 emptySquares = 9 * 9 * 9 - 200;
 
-            string endpoint = $"http://soduko3d.azurewebsites.net/api/GetInitialBoard?emptySquares={emptySquares}";
+            string endpoint = mainEndpoint + $"GetInitialBoard?emptySquares={emptySquares}";
 
             WebRequest request = WebRequest.Create(endpoint);
             using (WebResponse response = await request.GetResponseAsync())
@@ -184,6 +192,8 @@ namespace SodukoGui
         }
 
         private Dictionary<Tuple<int, int>, SingleSquareViewModel> SingleSquareViewModels = new Dictionary<Tuple<int, int>, SingleSquareViewModel>();
+        private short _fixedDimension;
+        private short _fixedIndex;
 
         internal SingleSquareViewModel GetSingleSquareViewModel(int i, int j)
         {

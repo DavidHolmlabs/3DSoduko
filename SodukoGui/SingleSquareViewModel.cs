@@ -33,7 +33,7 @@ namespace SodukoGui
 
         public bool Locked => m_model.Locked;
 
-        public bool Valid => m_model.Valid;
+        public bool Valid => m_model.Valid ?? true;
 
         internal void SetModel(SodukoSquare sodukoSquare)
         {

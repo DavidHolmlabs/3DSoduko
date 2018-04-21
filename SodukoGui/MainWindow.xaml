@@ -68,7 +68,7 @@
             <Button Content="Verify" Command="{Binding VerifyCommand}" />
             <Button Content="Solve" Command="{Binding SolveCommand}" IsEnabled="{Binding Solving, Converter={StaticResource NotConverter}}"/>
             <Button Content="Stop Solving" Command="{Binding StopSolveCommand}" IsEnabled="{Binding Solving}"/>
-            <local:DimensionSelector Index="{Binding FixedIndex}"/>
+            <local:DimensionSelector Index="{Binding FixedIndex}" Dimension="{Binding FixedDimension}" />
         </StackPanel>
     </Grid>
 </Window>

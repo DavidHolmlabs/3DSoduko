@@ -64,6 +64,13 @@ namespace Soduko
             LockValues();
         }
 
+        public string VerifyJson(string json)
+        {
+            Deserialize(json);
+            Verify();
+            return Serialize();
+        }
+
         public bool Verify()
         {
             board.IterateBoard(square =>
@@ -74,7 +81,7 @@ namespace Soduko
 
             int unfinishedSquares = board.IterateBoard(square =>
              {
-                 if (!square.Valid || square.Value == SodukoSet.EmptyValue)
+                 if (square.Valid == false  || square.Value == SodukoSet.EmptyValue)
                      return 1;
                  return 0;
              });
@@ -162,6 +169,7 @@ namespace Soduko
                         for (int k = 0; k < 9; k++)
                         {
                             board.Board[i, j, k].Value = newboard[i, j, k].Value;
+                            board.Board[i, j, k].Valid = newboard[i, j, k].Valid;
                             if (newboard[i, j, k].Locked)
                                 board.Board[i, j, k].Lock();
                         }

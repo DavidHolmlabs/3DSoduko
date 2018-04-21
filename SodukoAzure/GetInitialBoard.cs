@@ -13,25 +13,16 @@ namespace SodukoAzure
     public static class GetInitialBoard
     {
         [FunctionName("GetInitialBoard")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            log.Info("GetInitialBoard");
 
-            // parse query parameter
-            string emptySquaresString = req.GetQueryNameValuePairs()
-                .FirstOrDefault(q => string.Compare(q.Key, "emptySquares", true) == 0)
-                .Value;
-
-            if (emptySquaresString == null)
-            {
-                // Get request body
-                dynamic data = await req.Content.ReadAsAsync<object>();
-                emptySquaresString = data?.name;
-            }
+            dynamic data = await req.Content.ReadAsAsync<object>();
+            var emptySquaresString = data?.name;
 
             int emptySquares = 100;
 
-            if(emptySquaresString != null)
+            if (emptySquaresString != null)
             {
                 if (int.TryParse(emptySquaresString, out int res))
                     emptySquares = res;
@@ -44,8 +35,8 @@ namespace SodukoAzure
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(
-                    mainGame.Serialize(), 
-                    Encoding.UTF8, 
+                    mainGame.Serialize(),
+                    Encoding.UTF8,
                     "application/json")
             };
         }

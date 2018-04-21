@@ -16,9 +16,9 @@
             </Style>
         </StackPanel.Resources>
         <Label Content="Dimension" />
-        <RadioButton x:Name="DimensionX" Content="X" GroupName="Dimension" IsChecked="True" />
-        <RadioButton x:Name="DimensionY" Content="Y" GroupName="Dimension"/>
-        <RadioButton x:Name="DimensionZ" Content="Z" GroupName="Dimension" />
+        <RadioButton x:Name="Dimension1" Content="X" GroupName="Dimension" IsChecked="True" Checked="Dimension_Checked" />
+        <RadioButton x:Name="Dimension2" Content="Y" GroupName="Dimension" Checked="Dimension_Checked"/>
+        <RadioButton x:Name="Dimension3" Content="Z" GroupName="Dimension" Checked="Dimension_Checked"/>
         <Label Content="Index"/>
         <RadioButton x:Name="Index1" Content="1" GroupName="Index" IsChecked="True" Checked="Index_Checked"/>
         <RadioButton x:Name="Index2" Content="2" GroupName="Index" Checked="Index_Checked"/>
